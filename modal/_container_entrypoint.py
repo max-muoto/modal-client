@@ -191,6 +191,9 @@ def call_function(
         started_at = time.time()
         reset_context = _set_current_context_ids(input_id, function_call_id)
         async with container_io_manager.handle_input_exception.aio(input_id, started_at):
+
+            breakpoint()
+
             logger.debug(f"Starting input {input_id} (async)")
             res = finalized_function.callable(*args, **kwargs)
             logger.debug(f"Finished input {input_id} (async)")
@@ -591,6 +594,11 @@ def main(container_args: api_pb2.ContainerArguments, client: Client):
                 pdb.set_trace()
 
             sys.breakpointhook = breakpoint_wrapper
+        # if a pty is available (if user ran with --interactive mode)
+        # if container_args.function_def.pty_info.pty_type != api_pb2.PTYInfo.PTY_TYPE_UNSPECIFIED:
+        #interact()
+        #import pdb
+        #pdb.set_trace()
 
         # Identify the "enter" methods to run after resuming from a snapshot.
         if imp_fun.obj is not None and not imp_fun.is_auto_snapshot:
